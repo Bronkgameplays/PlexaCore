@@ -9,6 +9,8 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
+    <link rel="icon" type="image/svg+xml" href="{{ asset('img/favicon.png') }}">
+
     <title>Inicia Sesion</title>
 
     <!-- Custom fonts for this template-->
