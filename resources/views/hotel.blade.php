@@ -47,7 +47,8 @@
                 <div class="container-fluid">
 
                     <!-- Page Heading -->
-                    <h1 class="h3 mb-4 text-gray-800">Hotel</h1>
+                    <!-- hotel -->
+                    @include('layouts.gestiondehotel')
 
                 </div>
                 <!-- /.container-fluid -->

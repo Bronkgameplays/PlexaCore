@@ -1,0 +1,16 @@
+body {
+background-color: #f8f9fa;
+}
+
+.card {
+border-radius: 15px;
+transition: transform 0.2s ease;
+}
+
+.card:hover {
+transform: scale(1.03);
+}
+
+.estado {
+font-weight: bold;
+}

@@ -17,3 +17,7 @@ Route::get('/tablas', function () {
 Route::get('/hotel', function () {
     return view('hotel'); // busca resources/views/tables.blade.php
 });
+
+Route::get('/gestiondehotel', function () {
+    return view('gestiondehotel'); // busca resources/views/tables.blade.php
+});
