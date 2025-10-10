@@ -65,12 +65,10 @@
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
-                                            <th>Name</th>
-                                            <th>Position</th>
-                                            <th>Office</th>
-                                            <th>Age</th>
-                                            <th>Start date</th>
-                                            <th>Salary</th>
+                                            <th>ID</th>
+                                            <th>Nombre</th>
+                                            <th>Apellido</th>
+                                            <th>Movil nro.</th>
                                         </tr>
                                     </thead>
                                     <tfoot>
