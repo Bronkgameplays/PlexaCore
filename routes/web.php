@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ConductorController;
+use App\Http\Controllers\CloudFleet_Conductores;
 
 // Página principal
 Route::get('/', function () {
@@ -31,3 +32,5 @@ Route::get('/conductores/{id}', [ConductorController::class, 'show']);    // Lee
 Route::post('/conductores', [ConductorController::class, 'store']);       // Crear
 Route::put('/conductores/{id}', [ConductorController::class, 'update']);  // Actualizar
 Route::delete('/conductores/{id}', [ConductorController::class, 'destroy']); // Borrar
+
+Route::get('/cloud_conductor/', [CloudFleet_Conductores::class, 'obtenerTodos']);
