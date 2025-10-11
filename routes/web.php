@@ -27,10 +27,14 @@ Route::get('/gestiondehotel', function () {
 });
 
 Route::get('/tablas', [ConductorController::class, 'index']);
-Route::get('/conductores', [ConductorController::class, 'index']);        // Leer todos
+Route::get('/tablas', [ConductorController::class, 'index'])->name('tablas');        // Leer todos
 Route::get('/conductores/{id}', [ConductorController::class, 'show']);    // Leer uno
 Route::post('/conductores', [ConductorController::class, 'store']);       // Crear
 Route::put('/conductores/{id}', [ConductorController::class, 'update']);  // Actualizar
 Route::delete('/conductores/{id}', [ConductorController::class, 'destroy']); // Borrar
 
-Route::get('/cloud_conductor/', [CloudFleet_Conductores::class, 'obtenerTodos']);
+Route::get('/cloud_conductor/', [CloudFleet_Conductores::class, 'obtenerTodos'])->name('actualizarconductores');
+
+Route::get('/utilidades', function () {
+    return view('buttons');
+});

@@ -14,14 +14,20 @@ class Habitacion extends Model
 
     // Campos que pueden modificarse (ajústalos según tu tabla real)
     protected $fillable = [
-        'numero',
+        'cedula',
+        'nombre',
+        'apellido',
+        'email',
+        'celular',
+        'tipo',
         'estado',
-        'conductor_id'
     ];
 
     // Relación: una habitación pertenece a un conductor
+    /*
     public function conductor()
     {
         return $this->belongsTo(Conductor::class, 'conductor_id');
     }
+        */
 }

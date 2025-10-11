@@ -32,7 +32,7 @@
                 <tr>
                     <td>{{ $index + 1 }}</td>
                     <td>{{ $conductor['personalId'] ?? '—' }}</td>
-                    <td>{{ $conductor['FirsName'] ?? '—' }}</td>
+                    <td>{{ $conductor['firstName'] ?? '—' }}</td>
                     <td>{{ $conductor['lastName'] ?? '—' }}</td>
                     <td>{{ $conductor['email'] ?? '—' }}</td>
                     <td>{{ $conductor['landlinePhone'] ?? '—' }}</td>

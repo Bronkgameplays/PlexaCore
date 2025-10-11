@@ -9,23 +9,33 @@ class Conductor extends Model
 {
     use HasFactory;
 
-    // Nombre exacto de la tabla en la base de datos
+    // Desactivar timestamps automáticos
+    public $timestamps = false;
+
+    // Nombre exacto de la tabla
     protected $table = 'conductores';
 
-    // Campos que se pueden llenar de forma masiva
+    // ✅ Definir clave primaria personalizada
+    protected $primaryKey = 'cedula';
+    public $incrementing = false;
+    protected $keyType = 'string';
+
+    // Campos rellenables
     protected $fillable = [
-        'id',
-        'documento',
+        'cedula',
         'nombre',
-        'telefono',
+        'apellido',
         'email',
-        'fecha de registro',
-        // agrega aquí los demás campos que existan en tu tabla "conductores"
+        'celular',
+        'tipo',
+        'estado',
     ];
 
-    // Relación con la tabla habitaciones (si una habitación pertenece a un conductor)
+    // Relación con habitaciones (opcional)
+    /*
     public function habitaciones()
     {
         return $this->hasMany(Habitacion::class, 'conductor_id');
     }
+        */
 }

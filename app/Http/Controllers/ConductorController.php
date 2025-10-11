@@ -11,7 +11,7 @@ class ConductorController extends Controller
     // 1️⃣ Leer todos los conductores
     public function index()
     {
-        $conductores = Conductor::all();
+        $conductores = Conductor::orderBy('nombre')->get();
         return view('tablas', compact('conductores'));
     }
 
@@ -29,10 +29,13 @@ class ConductorController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'documento' => 'required|unique:conductores,documento',
+            'cedula' => 'required|unique:conductores,documento',
             'nombre' => 'required|string',
-            'telefono' => 'nullable|string',
+            'apellido' => 'nullable|string',
             'email' => 'nullable|email',
+            'celular' => 'nullable|string',
+            'tipo' => 'nullable|string',
+            'estado' => 'nullable|int',
         ]);
 
         $conductor = Conductor::create($data);
@@ -51,8 +54,11 @@ class ConductorController extends Controller
         $data = $request->validate([
             'documento' => 'required|unique:conductores,documento,' . $id,
             'nombre' => 'required|string',
-            'telefono' => 'nullable|string',
+            'apellido' => 'nullable|string',
             'email' => 'nullable|email',
+            'celular' => 'nullable|string',
+            'tipo' => 'nullable|string',
+            'estado' => 'nullable|int',
         ]);
 
         $conductor->update($data);
