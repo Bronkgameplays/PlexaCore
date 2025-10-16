@@ -2,8 +2,8 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Servidor: 127.0.0.1:3307
--- Tiempo de generación: 15-10-2025 a las 23:54:02
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 16-10-2025 a las 06:46:40
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -674,7 +674,7 @@ CREATE TABLE `failed_jobs` (
 
 CREATE TABLE `habitaciones` (
   `numero` int(2) NOT NULL,
-  `estado` int(1) DEFAULT NULL,
+  `estado` varchar(10) NOT NULL DEFAULT 'Disponible',
   `conductor` int(10) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -683,16 +683,16 @@ CREATE TABLE `habitaciones` (
 --
 
 INSERT INTO `habitaciones` (`numero`, `estado`, `conductor`) VALUES
-(1, NULL, NULL),
-(2, NULL, NULL),
-(3, NULL, NULL),
-(4, NULL, NULL),
-(5, NULL, NULL),
-(6, NULL, NULL),
-(7, NULL, NULL),
-(8, NULL, NULL),
-(9, NULL, NULL),
-(10, NULL, NULL);
+(1, 'Disponible', 77140085),
+(2, 'Ocupada', 77140085),
+(3, 'Disponible', NULL),
+(4, 'Disponible', NULL),
+(5, 'Disponible', NULL),
+(6, 'Ocupada', NULL),
+(7, 'Disponible', NULL),
+(8, 'Disponible', NULL),
+(9, 'Disponible', NULL),
+(10, 'Disponible', NULL);
 
 -- --------------------------------------------------------
 
@@ -782,8 +782,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('beTVCuHbu0ydTkssdreqlU0Lm5ZHqbzgq8ofrTWz', NULL, '172.16.20.42', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiTnFIQUg2OEp6U3YwOWllUjdUODZKUFhlNE1CQVlUZFRnSXdGZGVHZSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzE6Imh0dHA6Ly8xNzIuMTYuMjAuMTk2OjgwMDEvaG90ZWwiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1760560814),
-('qTXCeEI0ZpjAgSMI5FZsy0zS5EPwPjPeU4pc2hwK', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiclhrMDVIMjcwMkhiRFF5dTlTd3pBOWdpOFpNRHB0MVpsTExXeVJSZyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mjg6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMS90YWJsYXMiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1760560964);
+('YFvCWIr612pR6n9wvIuWptZHwayrOcOQKpYHN4Xc', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiR2lUTGRuTXNJaWxsdG00U3JUZW5tckFnSk9ta05mRWNmTHlsdWtXMSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMC9ob3RlbCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1760589713);
 
 -- --------------------------------------------------------
 
@@ -822,7 +821,9 @@ ALTER TABLE `cache_locks`
 -- Indices de la tabla `conductores`
 --
 ALTER TABLE `conductores`
-  ADD PRIMARY KEY (`cedula`);
+  ADD PRIMARY KEY (`cedula`),
+  ADD UNIQUE KEY `cedula_2` (`cedula`),
+  ADD KEY `cedula` (`cedula`);
 
 --
 -- Indices de la tabla `failed_jobs`
@@ -835,7 +836,10 @@ ALTER TABLE `failed_jobs`
 -- Indices de la tabla `habitaciones`
 --
 ALTER TABLE `habitaciones`
-  ADD PRIMARY KEY (`numero`);
+  ADD PRIMARY KEY (`numero`),
+  ADD UNIQUE KEY `numero_2` (`numero`),
+  ADD KEY `numero` (`numero`),
+  ADD KEY `conductor` (`conductor`);
 
 --
 -- Indices de la tabla `jobs`
@@ -904,6 +908,16 @@ ALTER TABLE `migrations`
 --
 ALTER TABLE `users`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- Restricciones para tablas volcadas
+--
+
+--
+-- Filtros para la tabla `habitaciones`
+--
+ALTER TABLE `habitaciones`
+  ADD CONSTRAINT `habitaciones_ibfk_1` FOREIGN KEY (`conductor`) REFERENCES `conductores` (`cedula`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

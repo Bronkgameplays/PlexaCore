@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ConductorController;
 use App\Http\Controllers\CloudFleet_Conductores;
+use App\Http\Controllers\HabitacionController;
 
 // Página principal
 Route::get('/', function () {
@@ -27,7 +28,8 @@ Route::get('/gestiondehotel', function () {
 });
 
 Route::get('/tablas', [ConductorController::class, 'index']);
-Route::get('/tablas', [ConductorController::class, 'index'])->name('tablas');        // Leer todos
+Route::get('/tablas', [ConductorController::class, 'tablas'])->name('tablas');        // Leer Conductores
+Route::get('/hotel', [HabitacionController::class, 'hotel']); //Leer Habitaciones
 Route::get('/conductores/{id}', [ConductorController::class, 'show']);    // Leer uno
 Route::post('/conductores', [ConductorController::class, 'store']);       // Crear
 Route::put('/conductores/{id}', [ConductorController::class, 'update']);  // Actualizar

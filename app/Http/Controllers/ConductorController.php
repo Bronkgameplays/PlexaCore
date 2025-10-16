@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Log;
 
 class ConductorController extends Controller
 {
-    // 1️⃣ Leer todos los conductores
-    public function index()
+    // 1️⃣ Leer todos los conductores para la vista tablas
+    public function tablas()
     {
         $conductores = Conductor::orderBy('nombre')->get();
         return view('tablas', compact('conductores'));

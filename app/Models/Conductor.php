@@ -31,11 +31,4 @@ class Conductor extends Model
         'estado',
     ];
 
-    // Relación con habitaciones (opcional)
-    /*
-    public function habitaciones()
-    {
-        return $this->hasMany(Habitacion::class, 'conductor_id');
-    }
-        */
 }

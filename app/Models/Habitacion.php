@@ -9,25 +9,28 @@ class Habitacion extends Model
 {
     use HasFactory;
 
-    // Nombre exacto de la tabla en la base de datos
+    // Desactivar timestamps automáticos
+    public $timestamps = false;
+
+    // Nombre exacto de la tabla
     protected $table = 'habitaciones';
 
-    // Campos que pueden modificarse (ajústalos según tu tabla real)
+    // ✅ Definir clave primaria personalizada
+    protected $primaryKey = 'numero';
+    public $incrementing = false;
+    protected $keyType = 'string';
+
+    // Campos rellenables
     protected $fillable = [
-        'cedula',
-        'nombre',
-        'apellido',
-        'email',
-        'celular',
-        'tipo',
+        'numero',
         'estado',
+        'conductor',
     ];
 
-    // Relación: una habitación pertenece a un conductor
-    /*
-    public function conductor()
+    public function hconductor()
     {
-        return $this->belongsTo(Conductor::class, 'conductor_id');
+        return $this->belongsTo(Conductor::class, 'conductor', 'cedula');
+        // 'conductor' es la columna en habitaciones
+        // 'cedula' es la clave primaria en la tabla conductores
     }
-        */
 }

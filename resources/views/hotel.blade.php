@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
 
@@ -14,13 +14,40 @@
     <title>Administracion de Hotel</title>
 
     <!-- Custom fonts for this template-->
-    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
 
     <!-- Custom styles for this template-->
-    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
+    <STYle>
+        
+.habitacion-card {
+    flex: 1 1 calc(25% - 1rem); /* 4 cards por fila con gap de 1rem */
+    min-width: 250px; /* Evita que se encojan demasiado */
+    box-sizing: border-box;
+}
+.cajas {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap; /* Permite que se vayan a la siguiente fila */
+    gap: 1rem; /* Espacio entre cards */
+}
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+}
+
+.card:hover {
+    transform: scale(1.05); /* zoom pequeño */
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    background-color: #f8f9fa; /* o el color que quieras */
+}
+.card-Ocupada{
+        cursor: not-allowed; /* para que el usuario vea que es interactivo */
+}
+    </STYle>
 
 </head>
 
@@ -48,8 +75,34 @@
 
                     <!-- Page Heading -->
                     <!-- hotel -->
-                    @include('layouts.gestiondehotel')
+                    {{-- @include('layouts.gestiondehotel') --}}
+                        <h2 class="text-center mb-4"> Gestión de Habitaciones</h2>
+                        <div class="cajas">
+                            @foreach ($habitaciones as $habitacion)
+                                <div class="card card-{{ $habitacion['estado'] ?? '—' }} shadow p-3 habitacion-card">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title">Habitación {{ $habitacion['numero'] ?? '—' }}</h5>
 
+                                        <p class="estado {{ ($habitacion['estado'] ?? '') === 'Disponible' ? 'text-success' : 'text-danger' }}">
+                                            {{ $habitacion['estado'] ?? '—' }}
+                                        </p>
+
+                                        <input type="text"
+                                            class="form-control mb-2"
+                                            placeholder="Nombre del conductor"
+                                            value="{{ $habitacion->hconductor->nombre ?? '' }} {{ $habitacion->hconductor->apellido ?? '' }}"
+                                            id="conductor-{{ $habitacion['numero'] }}"
+                                            {{ ($habitacion['estado'] ?? '') === 'Ocupada' ? 'disabled' : '' }}>
+
+                                        <button class="btn btn-primary w-100"
+                                                onclick="asignarHabitacion({{ $habitacion['numero'] ?? '—' }})"
+                                                {{ ($habitacion['estado'] ?? '') === 'Ocupada' ? 'disabled' : '' }}>
+                                            Asignar habitación
+                                        </button>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
                 </div>
                 <!-- /.container-fluid -->
 
@@ -92,14 +145,14 @@
     </div>
 
     <!-- Bootstrap core JavaScript-->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 
     <!-- Core plugin JavaScript-->
-    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="{{ asset('vendor/jquery-easing/jquery.easing.min.js') }}"></script>
 
     <!-- Custom scripts for all pages-->
-    <script src="js/sb-admin-2.min.js"></script>
+    <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>
 
 </body>
 
