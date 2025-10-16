@@ -78,4 +78,26 @@ class ConductorController extends Controller
         Log::info("Se eliminó el conductor ID: $id");
         return redirect()->back()->with('success', 'Conductor eliminado');
     }
+
+    // 6️⃣ Buscar conductores disponibles por nombre o documento
+    public function buscarDisponibles(Request $request)
+    {
+        $termino = $request->input('term');
+
+        // 🔹 Evitar caracteres especiales no deseados
+        $termino = preg_replace('/[^a-zA-Z0-9\s%]/', '', $termino);
+
+        // 🔹 Buscar conductores no asignados (estado = 1 por ejemplo)
+        $conductores = Conductor::where('estado', 1)
+            ->where(function ($query) use ($termino) {
+                $query->where('nombre', 'LIKE', "%{$termino}%")
+                      ->orWhere('apellido', 'LIKE', "%{$termino}%")
+                      ->orWhere('documento', 'LIKE', "%{$termino}%");
+            })
+            ->orderBy('nombre')
+            ->get(['id', 'nombre', 'apellido', 'documento']);
+
+        // 🔹 Retornar JSON para el autocompletado
+        return response()->json($conductores);
+    }
 }

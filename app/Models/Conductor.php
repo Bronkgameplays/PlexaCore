@@ -18,7 +18,7 @@ class Conductor extends Model
     // ✅ Definir clave primaria personalizada
     protected $primaryKey = 'cedula';
     public $incrementing = false;
-    protected $keyType = 'string';
+    protected $keyType = 'int'; // 👈 esto es lo correcto
 
     // Campos rellenables
     protected $fillable = [
@@ -30,5 +30,4 @@ class Conductor extends Model
         'tipo',
         'estado',
     ];
-
 }
