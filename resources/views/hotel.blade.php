@@ -79,6 +79,36 @@
             font-size: 0.9em;
         }
     </style>
+<script>
+function actualizarEstado(numero, nuevoEstado) {
+    if (!confirm(`¿Seguro que deseas cambiar el estado de la habitación ${numero} a ${nuevoEstado}?`)) return;
+
+    fetch(`/habitaciones/${numero}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+        },
+        body: JSON.stringify({
+            estado: nuevoEstado,
+            conductor: null
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert("✅ " + data.message);
+            location.reload();
+        } else {
+            alert("⚠️ Error: " + (data.error || "No se pudo actualizar."));
+        }
+    })
+    .catch(error => {
+        console.error("Error en la conexión:", error);
+        alert("Ocurrió un error de conexión.");
+    });
+}
+</script>
 </head>
 
 <body id="page-top">
@@ -134,6 +164,36 @@
                                 </div>
                             </div>
                         @endforeach
+                    </div>
+                    <hr class="my-5">
+                    <h2 class="text-center mb-4">Inventario de Habitaciones</h2>
+                    <div class="table-responsive">
+                        <table class="table table-striped text-center" id="tablaInventario">
+                            <thead class="table-dark">
+                            <tr>
+                                <th># Habitación</th>
+                                <th>Conductor</th>
+                                <th>Estado</th>
+                                <th>Acción</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                @foreach ($habitaciones as $habitacion)
+                                    <td>{{ $habitacion['numero'] ?? '—' }}</td>
+                                    <td>{{ $habitacion->hconductor->nombre ?? '' }} {{ $habitacion->hconductor->apellido ?? '' }}</td>
+                                    <td>{{ $habitacion['estado'] ?? '—' }}</td>
+                                    <td>
+                                    @if ($habitacion->estado === 'Ocupada')
+                                        <button class="btn btn-danger btn-sm" onclick="actualizarEstado('{{ $habitacion->numero }}', 'Disponible', '{{ $habitacion->conductor ?? '' }}')">Desasignar</button>
+                                    @else
+                                        <button class="btn btn-primary btn-sm">Disponible</button>
+                                    @endif
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
