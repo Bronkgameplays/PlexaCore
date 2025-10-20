@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ConductorController;
 use App\Http\Controllers\CloudFleet_Conductores;
 use App\Http\Controllers\HabitacionController;
-use App\Http\Controllers\LoginController;
 
 // Página principal
 Route::get('/', function () {
@@ -41,24 +40,8 @@ Route::post('/conductores', [ConductorController::class, 'store']);       // Cre
 Route::put('/conductores/{id}', [ConductorController::class, 'update']);  // Actualizar
 Route::delete('/conductores/{id}', [ConductorController::class, 'destroy']); // Borrar
 Route::get('/conductores/buscar', [ConductorController::class, 'buscarDisponibles'])->name('conductores.buscar');
-Route::post('/habitaciones/{id}/asignar', [HabitacionController::class, 'asignarConductor'])->name('habitaciones.asignar');
-Route::post('/habitaciones/{id}/desasignar', [HabitacionController::class, 'desasignarConductor'])->name('habitaciones.desasignar');
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-Route::put('/habitaciones/{numero}', [HabitacionController::class, 'update']);
-
-
-// Rutas protegidas por rol
-Route::middleware('auth')->group(function () {
-    Route::get('/admin/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('admin.dashboard');
-
-    Route::get('/usuario/dashboard', function () {
-        return view('usuario.dashboard');
-    })->name('usuario.dashboard');
-});
+Route::get('/hotel', [HabitacionController::class, 'hotel']);
+Route::put('/habitaciones/{numero}', [HabitacionController::class, 'update'])->name('habitaciones.update');
 
 
 
