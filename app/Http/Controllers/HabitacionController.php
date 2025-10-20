@@ -42,30 +42,42 @@ class HabitacionController extends Controller
         return redirect()->back()->with('success', 'Habitación creada');
     }
 
-    // 4️⃣ Actualizar una habitación
+    // 4️⃣ Actualizar una habitación (asignar o desasignar conductor)
     public function update(Request $request, $numero)
     {
         $habitacion = Habitacion::find($numero);
         if (!$habitacion) {
             return response()->json(['success' => false, 'error' => 'Habitación no encontrada'], 404);
         }
-    
+
+        // Validamos la data
         $data = $request->validate([
-            'numero' => 'nullable|string',
-            'estado' => 'nullable|string|in:Disponible,Ocupada',
-            'conductor' => 'nullable|string',
+            'conductor' => 'nullable|string', // aquí llegará la cédula o null
         ]);
-    
-        $habitacion->update($data);
-    
-        \Log::info("Se actualizó la habitación número: $numero con estado: {$habitacion->estado} y conductor: {$habitacion->conductor}");
-    
+
+        // Si llega un conductor → asignar
+        if (!empty($data['conductor'])) {
+            $habitacion->conductor = $data['conductor'];
+            $habitacion->estado = 'Ocupada';
+            $accion = 'asignó';
+        } 
+        // Si llega null → desasignar
+        else {
+            $habitacion->conductor = null;
+            $habitacion->estado = 'Disponible';
+            $accion = 'desasignó';
+        }
+
+        $habitacion->save();
+
+        Log::info("Se {$accion} la habitación número: $numero con estado: {$habitacion->estado} y conductor: {$habitacion->conductor}");
+
         return response()->json([
             'success' => true,
-            'message' => 'Habitación actualizada correctamente',
+            'message' => "Habitación {$habitacion->estado} correctamente",
             'habitacion' => $habitacion
         ]);
-    }    
+    } 
 
     // 5️⃣ Borrar una habitación
     public function destroy($numero)
