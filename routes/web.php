@@ -4,49 +4,51 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ConductorController;
 use App\Http\Controllers\CloudFleet_Conductores;
 use App\Http\Controllers\HabitacionController;
+use App\Http\Controllers\LoginController;
 
-// Página principal
-Route::get('/', function () {
-    return view('index');
-});
+// ----------------------
+// RUTAS PÚBLICAS (sin login)
+// ----------------------
+Route::get('/login', [LoginController::class, 'showLogin'])->name('login');
+Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 
-// Rutas adicionales
-Route::get('/index', function () {
-    return view('index');
-});
+// ----------------------
+// RUTAS PROTEGIDAS (requieren sesión)
+// ----------------------
+Route::middleware('auth')->group(function () {
 
-Route::get('/tablas', function () {
-    return view('tablas');
-});
+    Route::get('/', function () {
+        return view('index');
+    })->name('index');
 
-Route::get('/hotel', function () {
-    return view('hotel');
-});
+    Route::get('/index', function () {
+        return view('index');
+    });
 
-Route::get('/gestiondehotel', function () {
-    return view('gestiondehotel');
-});
+    Route::get('/tablas', [ConductorController::class, 'tablas'])->name('tablas');
+    Route::get('/hotel', [HabitacionController::class, 'hotel'])->name('hotel');
+    Route::get('/gestiondehotel', function () {
+        return view('gestiondehotel');
+    });
+    Route::get('/utilidades', function () {
+        return view('buttons');
+    });
 
-Route::get('/login', function () {
-    return view('login');
-});
+    // Conductores CRUD
+    Route::get('/conductores/{id}', [ConductorController::class, 'show']);
+    Route::post('/conductores', [ConductorController::class, 'store']);
+    Route::put('/conductores/{id}', [ConductorController::class, 'update']);
+    Route::delete('/conductores/{id}', [ConductorController::class, 'destroy']);
+    Route::get('/conductores/buscar', [ConductorController::class, 'buscarDisponibles'])->name('conductores.buscar');
 
-Route::get('/tablas', [ConductorController::class, 'index']);
-Route::get('/tablas', [ConductorController::class, 'tablas'])->name('tablas');        // Leer Conductores
-Route::get('/hotel', [HabitacionController::class, 'hotel']); //Leer Habitaciones
-Route::put('/habitaciones/{numero}', [HabitacionController::class, 'update'])->name('habitaciones.update');
-Route::get('/conductores/{id}', [ConductorController::class, 'show']);    // Leer uno
-Route::post('/conductores', [ConductorController::class, 'store']);       // Crear
-Route::put('/conductores/{id}', [ConductorController::class, 'update']);  // Actualizar
-Route::delete('/conductores/{id}', [ConductorController::class, 'destroy']); // Borrar
-Route::get('/conductores/buscar', [ConductorController::class, 'buscarDisponibles'])->name('conductores.buscar');
-Route::get('/hotel', [HabitacionController::class, 'hotel']);
-Route::put('/habitaciones/{numero}', [HabitacionController::class, 'update'])->name('habitaciones.update');
+    // Habitaciones
+    Route::put('/habitaciones/{numero}', [HabitacionController::class, 'update'])->name('habitaciones.update');
+    Route::post('/habitaciones/{id}/asignar', [HabitacionController::class, 'asignarConductor'])->name('habitaciones.asignar');
+    Route::post('/habitaciones/{id}/desasignar', [HabitacionController::class, 'desasignarConductor'])->name('habitaciones.desasignar');
 
+    // CloudFleet
+    Route::get('/cloud_conductor/', [CloudFleet_Conductores::class, 'obtenerTodos'])->name('actualizarconductores');
 
-
-Route::get('/cloud_conductor/', [CloudFleet_Conductores::class, 'obtenerTodos'])->name('actualizarconductores');
-
-Route::get('/utilidades', function () {
-    return view('buttons');
+    // Logout (también requiere sesión)
+    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 });

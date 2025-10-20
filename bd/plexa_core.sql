@@ -2,8 +2,8 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Servidor: 127.0.0.1
--- Tiempo de generación: 16-10-2025 a las 06:46:40
+-- Servidor: 127.0.0.1:3307
+-- Tiempo de generación: 21-10-2025 a las 00:03:01
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -674,7 +674,7 @@ CREATE TABLE `failed_jobs` (
 
 CREATE TABLE `habitaciones` (
   `numero` int(2) NOT NULL,
-  `estado` varchar(10) NOT NULL DEFAULT 'Disponible',
+  `estado` varchar(10) NOT NULL,
   `conductor` int(10) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -683,16 +683,49 @@ CREATE TABLE `habitaciones` (
 --
 
 INSERT INTO `habitaciones` (`numero`, `estado`, `conductor`) VALUES
-(1, 'Disponible', 77140085),
-(2, 'Ocupada', 77140085),
+(1, 'Disponible', NULL),
+(2, 'Disponible', NULL),
 (3, 'Disponible', NULL),
 (4, 'Disponible', NULL),
 (5, 'Disponible', NULL),
-(6, 'Ocupada', NULL),
+(6, 'Disponible', NULL),
 (7, 'Disponible', NULL),
 (8, 'Disponible', NULL),
 (9, 'Disponible', NULL),
 (10, 'Disponible', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `historial_habitaciones`
+--
+
+CREATE TABLE `historial_habitaciones` (
+  `id` int(11) NOT NULL,
+  `habitacion` int(2) NOT NULL,
+  `estado` varchar(10) NOT NULL,
+  `conductor` int(10) NOT NULL,
+  `usuario` int(10) NOT NULL,
+  `fecha` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `historial_habitaciones`
+--
+
+INSERT INTO `historial_habitaciones` (`id`, `habitacion`, `estado`, `conductor`, `usuario`, `fecha`) VALUES
+(1, 5, 'Ocupada', 91223639, 0, '2025-10-20 00:00:00'),
+(2, 5, 'Disponible', 91223639, 0, '2025-10-20 20:51:36'),
+(3, 6, 'Ocupada', 91236597, 0, '2025-10-20 15:53:05'),
+(4, 6, 'Disponible', 91236597, 0, '2025-10-20 15:53:17'),
+(5, 1, 'Ocupada', 77140085, 0, '2025-10-20 16:50:28'),
+(6, 2, 'Ocupada', 91281887, 0, '2025-10-20 16:50:41'),
+(7, 1, 'Disponible', 77140085, 0, '2025-10-20 16:51:35'),
+(8, 2, 'Disponible', 91281887, 0, '2025-10-20 16:51:41'),
+(9, 1, 'Ocupada', 77140085, 0, '2025-10-20 16:59:59'),
+(10, 10, 'Ocupada', 91277060, 0, '2025-10-20 17:00:10'),
+(11, 1, 'Disponible', 77140085, 0, '2025-10-20 17:00:31'),
+(12, 10, 'Disponible', 91277060, 0, '2025-10-20 17:00:37');
 
 -- --------------------------------------------------------
 
@@ -732,6 +765,19 @@ CREATE TABLE `job_batches` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `logs`
+--
+
+CREATE TABLE `logs` (
+  `id` int(11) NOT NULL,
+  `usuario` int(11) NOT NULL,
+  `permiso` varchar(30) NOT NULL,
+  `observación` varchar(250) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `migrations`
 --
 
@@ -765,6 +811,36 @@ CREATE TABLE `password_reset_tokens` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `permisos`
+--
+
+CREATE TABLE `permisos` (
+  `id` int(11) NOT NULL,
+  `rol` int(2) NOT NULL,
+  `permiso` varchar(30) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `roles`
+--
+
+CREATE TABLE `roles` (
+  `id` int(2) NOT NULL,
+  `nombre` varchar(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `roles`
+--
+
+INSERT INTO `roles` (`id`, `nombre`) VALUES
+(1, 'Super Administrador');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `sessions`
 --
 
@@ -782,24 +858,41 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('YFvCWIr612pR6n9wvIuWptZHwayrOcOQKpYHN4Xc', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiR2lUTGRuTXNJaWxsdG00U3JUZW5tckFnSk9ta05mRWNmTHlsdWtXMSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMC9ob3RlbCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1760589713);
+('3PWbPA3aQtrPP4ig5a1MNBCdDv4mIKUk0so20TqS', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoieXlOVXhWdWRjVkc3T2ZSQ01WMFFJbXhsVnpKV0ZSSjFKbGhBMmlzciI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMS9ob3RlbCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1760706040),
+('9bO9GKh7PgAUpHRGxWJq2kOpILw7QLhgAJvLqVzC', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiRmxwaDMwdnFITlU4MmtidTFaVnBUQTV4eUNzUEtaanhNYXFJWGQwaSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMS9ob3RlbCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1760713490),
+('9YA4aQDIjMsqOoxsCBFGCxwNARyvdzu0jSsuhaO0', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiRE1HUkRzcTVEWFVGMjdtMm1Ya0ZlNEtuR1VkVTFWQ3Y4Ym5TRWZwTSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMS9ob3RlbCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1760723471),
+('abfjTrSjQVdh7SgRd7DLWONpHJPPvLJipkWY1tD1', NULL, '172.16.20.42', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiWTh0R1Ztb2dNV2RZa1M5OTV0SDR4bGZYWlRoazVVS3ZrdXVuaVhLSCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjU6Imh0dHA6Ly8xNzIuMTYuMjAuMTk2OjgwMDEiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1760974924),
+('FKOjLSOuscFfVYfhJGF4QkZTPi8u054wtaqtBDpb', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiVmFCaFlTNTMxT01PaW4yVzNpSkZJelMwcjNyNER3YTlibmJmSzRocSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mjg6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMS90YWJsYXMiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1760975522),
+('i7XWD4oYZFwcHhM0EGvPZJwZ8fekuMTIanr2ES4N', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoicXU1c2oxajdaTmxaY0tGUnNGV3VTNk1WektqWlc1c3RjWmpGaVVDeSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMS9ob3RlbCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1760705170),
+('IZ4qxJkg2hEbTkkEOx2BWx9ybt1rZeDIXQZnxZDZ', 0, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiREtiSnpFYWc3RHNLTmxveE9VSmFxN3A5OG1uZjJuSk1pZjcySFdEaCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mjg6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMS90YWJsYXMiO31zOjM6InVybCI7YTowOnt9czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MDt9', 1760997646),
+('JTO5kdmsutSnGgqUC49WagGdUGnfeUt4ui1eGVYi', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiOUdIT2FPVFdQbllpWkNNZFJxQ1BOY3RjdTk1WW5Telo4TTBCWm5RRiI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMS9ob3RlbCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1760731060),
+('qd8QQBSEPpyVlKDhZR91LYo7rjQ3i17MA6LnmlWg', NULL, '172.16.20.42', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiMFZFckNSZlkxZ1VSVFdrYlFXd0ViYWJJZmZRZ01Yamt3QUxGbVZpVCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzE6Imh0dHA6Ly8xNzIuMTYuMjAuMTk2OjgwMDEvaG90ZWwiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1760710111),
+('XNeZlen6WfiSVce2BPOsz1IzztomSSwETrcwrkex', NULL, '172.16.20.42', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiQ1lMV242NHJ0QTU2ZTdJSnpKNkRLRXJxMTNFdUJMV09YbmhVOGM3bSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjU6Imh0dHA6Ly8xNzIuMTYuMjAuMTk2OjgwMDEiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1760991581);
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `users`
+-- Estructura de tabla para la tabla `usuarios`
 --
 
-CREATE TABLE `users` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `email_verified_at` timestamp NULL DEFAULT NULL,
-  `password` varchar(255) NOT NULL,
-  `remember_token` varchar(100) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+CREATE TABLE `usuarios` (
+  `cedula` int(10) NOT NULL,
+  `Nombre` varchar(50) NOT NULL,
+  `Apellido` varchar(50) NOT NULL,
+  `email` varchar(250) DEFAULT NULL,
+  `cel` varchar(30) DEFAULT NULL,
+  `contraseña` varchar(30) NOT NULL,
+  `rol` int(2) NOT NULL,
+  `estado` int(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `usuarios`
+--
+
+INSERT INTO `usuarios` (`cedula`, `Nombre`, `Apellido`, `email`, `cel`, `contraseña`, `rol`, `estado`) VALUES
+(0, 'Henry', 'Castro', 'hcastro@plexa.co', NULL, 'Plexa2025', 1, 1),
+(1041972451, 'Roys ', 'Simarra', 'tunometecabra202004@gmail.com', '3245145593', 'lavidaesunasola12', 1, 1);
 
 --
 -- Índices para tablas volcadas
@@ -821,9 +914,7 @@ ALTER TABLE `cache_locks`
 -- Indices de la tabla `conductores`
 --
 ALTER TABLE `conductores`
-  ADD PRIMARY KEY (`cedula`),
-  ADD UNIQUE KEY `cedula_2` (`cedula`),
-  ADD KEY `cedula` (`cedula`);
+  ADD PRIMARY KEY (`cedula`);
 
 --
 -- Indices de la tabla `failed_jobs`
@@ -836,10 +927,13 @@ ALTER TABLE `failed_jobs`
 -- Indices de la tabla `habitaciones`
 --
 ALTER TABLE `habitaciones`
-  ADD PRIMARY KEY (`numero`),
-  ADD UNIQUE KEY `numero_2` (`numero`),
-  ADD KEY `numero` (`numero`),
-  ADD KEY `conductor` (`conductor`);
+  ADD PRIMARY KEY (`numero`);
+
+--
+-- Indices de la tabla `historial_habitaciones`
+--
+ALTER TABLE `historial_habitaciones`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indices de la tabla `jobs`
@@ -855,6 +949,12 @@ ALTER TABLE `job_batches`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indices de la tabla `logs`
+--
+ALTER TABLE `logs`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indices de la tabla `migrations`
 --
 ALTER TABLE `migrations`
@@ -867,6 +967,19 @@ ALTER TABLE `password_reset_tokens`
   ADD PRIMARY KEY (`email`);
 
 --
+-- Indices de la tabla `permisos`
+--
+ALTER TABLE `permisos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `rol` (`rol`);
+
+--
+-- Indices de la tabla `roles`
+--
+ALTER TABLE `roles`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indices de la tabla `sessions`
 --
 ALTER TABLE `sessions`
@@ -875,11 +988,11 @@ ALTER TABLE `sessions`
   ADD KEY `sessions_last_activity_index` (`last_activity`);
 
 --
--- Indices de la tabla `users`
+-- Indices de la tabla `usuarios`
 --
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `users_email_unique` (`email`);
+ALTER TABLE `usuarios`
+  ADD PRIMARY KEY (`cedula`),
+  ADD KEY `rol` (`rol`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
@@ -892,10 +1005,22 @@ ALTER TABLE `failed_jobs`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de la tabla `historial_habitaciones`
+--
+ALTER TABLE `historial_habitaciones`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
 -- AUTO_INCREMENT de la tabla `jobs`
 --
 ALTER TABLE `jobs`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `logs`
+--
+ALTER TABLE `logs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `migrations`
@@ -904,20 +1029,32 @@ ALTER TABLE `migrations`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT de la tabla `users`
+-- AUTO_INCREMENT de la tabla `permisos`
 --
-ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `permisos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `roles`
+--
+ALTER TABLE `roles`
+  MODIFY `id` int(2) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Restricciones para tablas volcadas
 --
 
 --
--- Filtros para la tabla `habitaciones`
+-- Filtros para la tabla `permisos`
 --
-ALTER TABLE `habitaciones`
-  ADD CONSTRAINT `habitaciones_ibfk_1` FOREIGN KEY (`conductor`) REFERENCES `conductores` (`cedula`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE `permisos`
+  ADD CONSTRAINT `permisos_ibfk_1` FOREIGN KEY (`rol`) REFERENCES `roles` (`id`);
+
+--
+-- Filtros para la tabla `usuarios`
+--
+ALTER TABLE `usuarios`
+  ADD CONSTRAINT `usuarios_ibfk_1` FOREIGN KEY (`rol`) REFERENCES `roles` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

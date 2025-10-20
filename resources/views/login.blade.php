@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
 
@@ -36,36 +36,43 @@
                 <div class="card o-hidden border-0 shadow-lg my-5">
                     <div class="card-body p-0">
                         <!-- Nested Row within Card Body -->
-                        <div class="row">
-                            <div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
+                        <div class="row min-vh-10 g-0">
+                            <div class="col-lg-6 d-none d-lg-flex justify-content-center align-items-center bg-light">
+                                <img src="{{ asset('img/Logo_plexa.svg') }}"  alt="Logo Plexa" style="max-width: 100%; height: auto;">
+                            </div>
                             <div class="col-lg-6">
                                 <div class="p-5">
                                     <div class="text-center">
-                                        <h1 class="h4 text-gray-900 mb-4"> </h1>
+                                        <h1 class="h4 text-gray-900 mb-4"></h1>
                                     </div>
-                                    <form class="user">
-                                        <div class="form-group">
-                                            <input type="email" class="form-control form-control-user"
-                                                id="exampleInputEmail" aria-describedby="emailHelp"
-                                                placeholder="Correo electronico">
+                                    <form class="user" method="POST" action="{{ route('login.post') }}">
+                                    @csrf
+                                    <div class="form-group">
+                                        <input type="email" name="email" class="form-control form-control-user"
+                                            id="exampleInputEmail" aria-describedby="emailHelp"
+                                            placeholder="Correo electrónico" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="password" name="password" class="form-control form-control-user"
+                                            id="exampleInputPassword" placeholder="Contraseña" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="custom-control custom-checkbox small">
+                                            <input type="checkbox" name="remember" class="custom-control-input" id="customCheck">
+                                            <label class="custom-control-label" for="customCheck">Recuérdame</label>
                                         </div>
-                                        <div class="form-group">
-                                            <input type="password" class="form-control form-control-user"
-                                                id="exampleInputPassword" placeholder="Contraseña">
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="custom-control custom-checkbox small">
-                                                <input type="checkbox" class="custom-control-input" id="customCheck">
-                                                <label class="custom-control-label" for="customCheck">Recuerdame </label>
-                                            </div>
-                                        </div>
-                                        <a href="index.html" class="btn btn-primary btn-user btn-block">
-                                            Inicia Sesion
-                                        </a>
-                                    </form>
-                                    <div class="text-center">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-user btn-block">
+                                        Iniciar Sesión
+                                    </button>
+
+                                    @error('email')
+                                        <div class="alert alert-danger mt-3 small">{{ $message }}</div>
+                                    @enderror
+                                </form>
+                                    {{--<div class="text-center">
                                         <a class="small" href="forgot-password.html">Olvide mi Contraseña</a>
-                                    </div>
+                                    </div>--}}
                                    <!-- <div class="text-center">
                                         <a class="small" href="register.html">¿No tienes una cuenta? Crea tu cuenta</a>
                                     </div>-->
