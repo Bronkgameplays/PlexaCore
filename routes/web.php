@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ConductorController;
 use App\Http\Controllers\CloudFleet_Conductores;
 use App\Http\Controllers\HabitacionController;
+use App\Http\Controllers\LoginController;
 
 // Página principal
 Route::get('/', function () {
@@ -42,6 +43,17 @@ Route::delete('/conductores/{id}', [ConductorController::class, 'destroy']); // 
 Route::get('/conductores/buscar', [ConductorController::class, 'buscarDisponibles'])->name('conductores.buscar');
 Route::get('/hotel', [HabitacionController::class, 'hotel']);
 Route::put('/habitaciones/{numero}', [HabitacionController::class, 'update'])->name('habitaciones.update');
+
+// Rutas protegidas por rol
+Route::middleware('auth')->group(function () {
+    Route::get('/admin/dashboard', function () {
+        return view('admin.dashboard');
+    })->name('admin.dashboard');
+
+    Route::get('/usuario/dashboard', function () {
+        return view('usuario.dashboard');
+    })->name('usuario.dashboard');
+});
 
 
 
