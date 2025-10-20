@@ -40,10 +40,8 @@ Route::post('/conductores', [ConductorController::class, 'store']);       // Cre
 Route::put('/conductores/{id}', [ConductorController::class, 'update']);  // Actualizar
 Route::delete('/conductores/{id}', [ConductorController::class, 'destroy']); // Borrar
 Route::get('/conductores/buscar', [ConductorController::class, 'buscarDisponibles'])->name('conductores.buscar');
-Route::post('/habitaciones/{id}/asignar', [HabitacionController::class, 'asignarConductor'])->name('habitaciones.asignar');
-Route::post('/habitaciones/{id}/desasignar', [HabitacionController::class, 'desasignarConductor'])->name('habitaciones.desasignar');
-Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
-
+Route::get('/hotel', [HabitacionController::class, 'hotel']);
+Route::put('/habitaciones/{numero}', [HabitacionController::class, 'update'])->name('habitaciones.update');
 
 
 

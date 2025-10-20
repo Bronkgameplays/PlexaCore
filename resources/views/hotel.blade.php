@@ -31,20 +31,25 @@
             position: relative;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             z-index: 1;
+            overflow: visible !important;
         }
 
         .card:hover {
             transform: scale(1.05);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
             background-color: #f8f9fa;
-            z-index: 2;
+            z-index: 1000;
+        }
+        
+        .card:has(.lista-conductores[style*="display: block"]) {
+            z-index: 1001 !important;
         }
 
         .card-Ocupada {
             cursor: not-allowed;
+            opacity: 0.7;
         }
 
-        /* 🔍 Lista de sugerencias */
         .lista-conductores {
             position: absolute;
             top: 100%;
@@ -68,7 +73,6 @@
 
         .conductor-item:hover {
             background-color: #e9ecef;
-            z-index: 1000;
         }
 
         .conductor-item strong {
@@ -79,36 +83,6 @@
             font-size: 0.9em;
         }
     </style>
-<script>
-function actualizarEstado(numero, nuevoEstado) {
-    if (!confirm(`¿Seguro que deseas cambiar el estado de la habitación ${numero} a ${nuevoEstado}?`)) return;
-
-    fetch(`/habitaciones/${numero}`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRF-TOKEN": "{{ csrf_token() }}"
-        },
-        body: JSON.stringify({
-            estado: nuevoEstado,
-            conductor: null
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert("✅ " + data.message);
-            location.reload();
-        } else {
-            alert("⚠️ Error: " + (data.error || "No se pudo actualizar."));
-        }
-    })
-    .catch(error => {
-        console.error("Error en la conexión:", error);
-        alert("Ocurrió un error de conexión.");
-    });
-}
-</script>
 </head>
 
 <body id="page-top">
@@ -121,6 +95,9 @@ function actualizarEstado(numero, nuevoEstado) {
 
                 <div class="container-fluid">
                     <h2 class="text-center mb-4">Gestión de Habitaciones</h2>
+                    {{ now()->format('Y-m-d H:i:s') }}
+ 
+                    
 
                     <!-- Mensajes -->
                     @if (session('success'))
@@ -140,57 +117,81 @@ function actualizarEstado(numero, nuevoEstado) {
                                         {{ $habitacion['estado'] ?? '—' }}
                                     </p>
 
-                                    <div class="mb-2 position-relative">
-                                        <input type="text" id="buscadorConductor{{ $habitacion->numero }}"
-                                            name="conductor" class="form-control"
-                                            placeholder="Escriba cédula o nombre del conductor..."
-                                            autocomplete="off">
+                                    @if ($habitacion->estado === 'Disponible')
+                                        <div class="mb-2 position-relative">
+                                            <input type="text" 
+                                                id="buscadorConductor{{ $habitacion->numero }}" 
+                                                class="form-control"
+                                                placeholder="Escriba cédula o nombre del conductor..." 
+                                                autocomplete="off">
 
-                                        <div id="listaConductores{{ $habitacion->numero }}" class="lista-conductores">
-                                            @foreach ($conductores as $conductor)
-                                                <div class="conductor-item"
-                                                    data-cedula="{{ $conductor->cedula }}"
-                                                    data-nombre="{{ $conductor->nombre }} {{ $conductor->apellido }}">
-                                                    <strong>{{ $conductor->nombre }} {{ $conductor->apellido }}</strong>
-                                                    <div class="text-muted">{{ $conductor->cedula }}</div>
-                                                </div>
-                                            @endforeach
+                                            <div id="listaConductores{{ $habitacion->numero }}" class="lista-conductores">
+                                                @foreach ($conductores->whereNotIn('cedula', $habitaciones->pluck('conductor')->filter()) as $conductor)
+                                                    <div class="conductor-item"
+                                                        data-cedula="{{ $conductor->cedula }}"
+                                                        data-nombre="{{ $conductor->nombre }} {{ $conductor->apellido }}">
+                                                        <strong>{{ $conductor->nombre }} {{ $conductor->apellido }}</strong>
+                                                        <div class="text-muted">{{ $conductor->cedula }}</div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <button type="button" class="btn btn-primary w-100 mt-2 btn-asignar">
-                                        Asignar Habitación
-                                    </button>
+                                        <button type="button" 
+                                            class="btn btn-primary w-100 mt-2 btn-asignar" 
+                                            data-numero="{{ $habitacion->numero }}">
+                                            Asignar Habitación
+                                        </button>
+                                    @else
+                                        <div class="alert alert-info mt-2">
+                                            Ocupada por: <strong>{{ $habitacion->hconductor->nombre ?? '' }} {{ $habitacion->hconductor->apellido ?? '' }}</strong>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach
                     </div>
+
                     <hr class="my-5">
+
                     <h2 class="text-center mb-4">Inventario de Habitaciones</h2>
                     <div class="table-responsive">
                         <table class="table table-striped text-center" id="tablaInventario">
                             <thead class="table-dark">
-                            <tr>
-                                <th># Habitación</th>
-                                <th>Conductor</th>
-                                <th>Estado</th>
-                                <th>Acción</th>
-                            </tr>
+                                <tr>
+                                    <th># Habitación</th>
+                                    <th>Conductor</th>
+                                    <th>Estado</th>
+                                    <th>Acción</th>
+                                </tr>
                             </thead>
                             <tbody>
-                                <tr>
                                 @foreach ($habitaciones as $habitacion)
-                                    <td>{{ $habitacion['numero'] ?? '—' }}</td>
-                                    <td>{{ $habitacion->hconductor->nombre ?? '' }} {{ $habitacion->hconductor->apellido ?? '' }}</td>
-                                    <td>{{ $habitacion['estado'] ?? '—' }}</td>
-                                    <td>
-                                    @if ($habitacion->estado === 'Ocupada')
-                                        <button class="btn btn-danger btn-sm" onclick="actualizarEstado('{{ $habitacion->numero }}', 'Disponible', '{{ $habitacion->conductor ?? '' }}')">Desasignar</button>
-                                    @else
-                                        <button class="btn btn-primary btn-sm">Disponible</button>
-                                    @endif
-                                    </td>
-                                </tr>
+                                    <tr>
+                                        <td>{{ $habitacion['numero'] ?? '—' }}</td>
+                                        <td>
+                                            @if($habitacion->hconductor)
+                                                {{ $habitacion->hconductor->nombre }} {{ $habitacion->hconductor->apellido }}
+                                                {{--<small class="text-muted d-block">{{ $habitacion->hconductor->cedula }}</small>--}}
+                                            @else
+                                                <span class="text-muted">—</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                                {{ $habitacion['estado'] ?? '—' }}
+                                            
+                                        </td>
+                                        <td>
+                                            @if ($habitacion->estado === 'Ocupada')
+                                                <button class="btn btn-danger btn-sm" 
+                                                    onclick="actualizarEstado('{{ $habitacion->numero }}', 'Disponible')">
+                                                    Desasignar
+                                                </button>
+                                            @else
+                                                <button class="btn btn-secondary btn-sm" disabled>Disponible</button>
+                                            @endif
+                                        </td>
+                                    </tr>
                                 @endforeach
                             </tbody>
                         </table>
@@ -209,74 +210,132 @@ function actualizarEstado(numero, nuevoEstado) {
     <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('vendor/jquery-easing/jquery.easing.min.js') }}"></script>
     <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>
-
-    <!-- ✅ SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const inputs = document.querySelectorAll('[id^="buscadorConductor"]');
+        // Función para desasignar habitación
+        function actualizarEstado(numero, nuevoEstado) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: `¿Deseas cambiar el estado de la habitación ${numero} a ${nuevoEstado}?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, desasignar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/habitaciones/${numero}`, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                        },
+                        body: JSON.stringify({
+                            estado: nuevoEstado,
+                            conductor: null
+                        })
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire("Actualizado", data.message, "success").then(() => location.reload());
+                        } else {
+                            Swal.fire("Error", data.error || "No se pudo actualizar.", "error");
+                        }
+                    })
+                    .catch(() => Swal.fire("Error", "Error de conexión con el servidor.", "error"));
+                }
+            });
+        }
 
-            inputs.forEach(input => {
-                const habitacion = input.id.replace('buscadorConductor', '');
-                const lista = document.getElementById('listaConductores' + habitacion);
-                const items = lista.querySelectorAll('.conductor-item');
-                const boton = lista.closest('.card').querySelector('.btn-asignar');
+        document.addEventListener("DOMContentLoaded", () => {
+            // Asignar habitación
+            document.querySelectorAll(".btn-asignar").forEach(boton => {
+                boton.addEventListener("click", () => {
+                    const numero = boton.dataset.numero;
+                    const input = document.getElementById("buscadorConductor" + numero);
+                    const cedula = input.getAttribute("data-cedula");
+                    const nombreConductor = input.value;
 
-                // 🔍 Filtrar conductores
-                input.addEventListener('input', () => {
+                    if (!cedula) {
+                        Swal.fire("Atención", "Seleccione un conductor antes de asignar.", "warning");
+                        return;
+                    }
+
+                    Swal.fire({
+                        title: '¿Confirmar asignación?',
+                        text: `¿Asignar habitación ${numero} a ${nombreConductor}?`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#28a745',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Sí, asignar',
+                        cancelButtonText: 'Cancelar'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch(`/habitaciones/${numero}`, {
+                                method: "PUT",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                                },
+                                body: JSON.stringify({
+                                    estado: "Ocupada",
+                                    conductor: cedula
+                                })
+                            })
+                            .then(r => r.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire("Éxito", data.message, "success").then(() => location.reload());
+                                } else {
+                                    Swal.fire("Error", data.error || "No se pudo asignar la habitación.", "error");
+                                }
+                            })
+                            .catch(() => Swal.fire("Error", "Error de conexión con el servidor.", "error"));
+                        }
+                    });
+                });
+            });
+
+            // Sistema de búsqueda de conductores
+            document.querySelectorAll('[id^="buscadorConductor"]').forEach(input => {
+                const numero = input.id.replace("buscadorConductor", "");
+                const lista = document.getElementById("listaConductores" + numero);
+                const items = lista.querySelectorAll(".conductor-item");
+
+                // Filtrar conductores mientras se escribe
+                input.addEventListener("input", () => {
                     const texto = input.value.toLowerCase().trim();
                     let visible = false;
 
                     items.forEach(item => {
                         const nombre = item.dataset.nombre.toLowerCase();
                         const cedula = item.dataset.cedula.toLowerCase();
-                        if (nombre.includes(texto) || cedula.includes(texto)) {
-                            item.style.display = 'block';
-                            visible = true;
-                        } else {
-                            item.style.display = 'none';
-                        }
+                        const coincide = nombre.includes(texto) || cedula.includes(texto);
+                        
+                        item.style.display = coincide ? "block" : "none";
+                        if (coincide) visible = true;
                     });
 
-                    lista.style.display = visible ? 'block' : 'none';
+                    lista.style.display = visible ? "block" : "none";
                 });
 
-                // 👆 Seleccionar conductor
+                // Seleccionar conductor
                 items.forEach(item => {
-                    item.addEventListener('click', () => {
+                    item.addEventListener("click", () => {
                         input.value = item.dataset.nombre;
-                        input.setAttribute('data-cedula', item.dataset.cedula);
-                        lista.style.display = 'none';
+                        input.setAttribute("data-cedula", item.dataset.cedula);
+                        lista.style.display = "none";
                     });
                 });
 
-                // 🚫 Cerrar lista si se hace clic fuera
-                document.addEventListener('click', (e) => {
+                // Cerrar lista al hacer clic fuera
+                document.addEventListener("click", e => {
                     if (!lista.contains(e.target) && e.target !== input) {
-                        lista.style.display = 'none';
-                    }
-                });
-
-                // ✅ Validar campos al presionar el botón
-                boton.addEventListener('click', (event) => {
-                    event.preventDefault();
-                    const conductor = input.value.trim();
-
-                    if (!conductor) {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Campos incompletos',
-                            text: 'Por favor, seleccione un conductor antes de asignar la habitación.',
-                            confirmButtonText: 'Entendido'
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Habitación asignada',
-                            text: 'La habitación se ha asignado correctamente.',
-                            confirmButtonText: 'Aceptar'
-                        });
+                        lista.style.display = "none";
                     }
                 });
             });
